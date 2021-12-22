@@ -1,6 +1,6 @@
 # ![运营商][1] PHP-ES
-[![Stars](https://img.shields.io/github/stars/echosong/es.svg)](https://github.com/es/echosong/stargazers)
-[![Forks](https://img.shields.io/github/forks/echosong/es.svg)](https://github.com/es/echosong/network)
+[![Stars](https://img.shields.io/github/stars/one-alone/es.svg)](https://github.com/es/one-alone/stargazers)
+[![Forks](https://img.shields.io/github/forks/one-alone/es.svg)](https://github.com/es/one-alone/network)
 
 ## 框架简介
 PHP-ES 是一款 极简、灵活、 高性能、扩建性强、上手快php 框架; 以“快速开发、轻松上手、高速执行”为理念，助你成为web开发的能手 ！
@@ -38,7 +38,7 @@ PHP-ES 是一款 极简、灵活、 高性能、扩建性强、上手快php 框�
 ## 安装
 
 ### 下载
-    git clone https://github.com/Echosong/es（web建立到当前文件夹）
+    git clone https://github.com/one-alone/es（web建立到当前文件夹）
 
 ### 各种web 服务器配置重定向
 
@@ -516,8 +516,8 @@ $ php index.php m c a "自定义参数"
 
 ## 联系方式
 
-* bug和建议请发送至：`313690636@qq.com`；
-* 技术支持、技术合作或咨询请联系作者QQ:`313690636`、群：`571627871`。
+* bug和建议请发送至：`903838379@qq.com`；
+* 技术支持、技术合作或咨询请联系作者QQ:`903838379`。
 * 博客地址 ：http://www.cnblogs.com/echosong/
 
 

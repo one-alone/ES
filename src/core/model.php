@@ -26,19 +26,6 @@ class Model
             }
         }
     }
-    
-    /**
-     * 事务处理，事务之前应该
-     */
-    public static function startTrans(){
-        $db = $GLOBALS['mysql_instances']['default'];
-        if($db == null){
-            return false;
-        }
-        $db->beginTransaction();
-        return $db;
-    }
-
 
     public function __get($name)
     {
@@ -48,7 +35,7 @@ class Model
             return $this->_model[$name];
         }
     }
-    
+
     public static function startTrans(){
         $db = $GLOBALS['mysql_instances']['default'];
         if($db == null){
@@ -57,7 +44,6 @@ class Model
         $db->beginTransaction();
         return $db;
     }
-
     public function findAll($conditions = array(), $sort = null, $fields = '*', $limit = null)
     {
         $sort = !empty($sort) ? ' ORDER BY ' . $sort : '';
@@ -86,6 +72,7 @@ class Model
 
     public function find($conditions = array(), $sort = null, $fields = '*')
     {
+
         $res = $this->findAll($conditions, $sort, $fields, 1);
         if (!empty($res)) {
             $this->_model = array_pop($res);
@@ -115,7 +102,7 @@ class Model
             $values[":M_UPDATE_" . $k] = str_ireplace('</script>','', $v);
             $set_value[] = '`' . $k . "`=" . ":M_UPDATE_" . $k;
         }
-      //  var_dump($values);
+        //  var_dump($values);
         $conditions = $this->_where($conditions);
         return $this->execute("UPDATE " . $this->table_name . " SET " . implode(', ',
                                                                                 $set_value) . $conditions["_where"],
@@ -233,6 +220,7 @@ class Model
 
     public function query($sql, $params = array())
     {
+
         return $this->execute($sql, $params, true);
     }
 
@@ -250,12 +238,16 @@ class Model
             }
             $sth = $this->_master_db->prepare($sql);
         }
+
+
         if (is_array($params) && !empty($params)) {
             foreach ($params as $k => &$v) {
                 $sth->bindParam($k, $v);
             }
         }
-        if ($sth->execute()) {
+
+        $bool = $sth->execute();
+        if ($bool) {
             return $is_query ? $sth->fetchAll(PDO::FETCH_ASSOC) : $sth->rowCount();
         }
         $err = $sth->errorInfo();
@@ -277,11 +269,9 @@ class Model
             }
         }
         if ($is_readonly) {
-            $this->_slave_db = $this->_db_instance($db_config, $db_config_key);
-            return $this->_slave_db;
+            return  $this->_slave_db = $this->_db_instance($db_config, $db_config_key);
         } else {
-            $this->_master_db = $this->_db_instance($db_config, $db_config_key);
-            return  $this->_master_db;
+            return  $this->_master_db = $this->_db_instance($db_config, $db_config_key);
         }
     }
 
@@ -315,7 +305,7 @@ class Model
         return $GLOBALS['mysql_instances'][$db_config_key];
     }
 
-    private function _wherein($sql, $inArray)
+    private function _wherein($sql, $inArray=array())
     {
         foreach ($inArray as $key => $value) {
             if (!is_array($value)) {
