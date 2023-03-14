@@ -1,0 +1,74 @@
+{
+  "这是%_%天": {
+    "cn": "这是%_%天",
+    "en": "This is %_% days",
+    "vi": "Đây là %_% ngày",
+    "ko": "%_%일입니다.",
+    "ms": "Ini adalah %_% hari",
+    "id": "Ini adalah %_% hari"
+  },
+  "%_%": {
+    "cn": "%_%",
+    "en": " %_%",
+    "vi": "%_%",
+    "ko": "%_%",
+    "ms": "%_%",
+    "id": "%_%"
+  },
+  "年审大房间爱死哦大姐夫%_%啥地方大师傅": {
+    "cn": "年审大房间爱死哦大姐夫%_%啥地方大师傅",
+    "en": "Annual review of the big room love oh big brother-in-law %_% what place master",
+    "vi": "Đánh giá hàng năm Phòng lớn yêu chết Oh anh rể lớn %_% Tại sao nơi nào sư phụ lớn",
+    "ko": "설마 큰방은 죽을거야 큰형부 %_% 어디 큰스승님",
+    "ms": "Bilik kajian tahunan suka mati, abang ipar %_% Apa tuan tempatan",
+    "id": "Ulasan tahunan kamar besar suka mati, kakak ipar %_% master lokal"
+  },
+  "测试%_%处理进程%_%抢占": {
+    "cn": "测试%_%处理进程%_%抢占",
+    "en": "Test%_% processing process%_% preemption",
+    "vi": "Kiểm tra%_% Quy trình xử lý%_% Nắm bắt",
+    "ko": "%_% 프로세스 %_% 선점 테스트",
+    "ms": "Uji proses pemprosesan %_% %_% preemption",
+    "id": "Tes %_% proses pemrosesan %_% preemption"
+  },
+  "测试 %_% 处理进程 %_% 抢占": {
+    "cn": "测试 %_% 处理进程 %_% 抢占",
+    "en": "Test%_% processing process%_% preemption",
+    "vi": "Kiểm tra%_% Quy trình xử lý%_% Nắm bắt",
+    "ko": "%_% 프로세스 %_% 선점 테스트",
+    "ms": "Uji proses pemprosesan %_% %_% preemption",
+    "id": "Tes %_% proses pemrosesan %_% preemption"
+  },
+  "测 试 %_% 处理 进程 %_% 抢 占": {
+    "cn": "测 试 %_% 处理 进程 %_% 抢 占",
+    "en": "Test%_% processing process%_% preemption",
+    "vi": "Kiểm tra%_% Quy trình xử lý%_% Nắm bắt",
+    "ko": "%_% 프로세스 %_% 선점 테스트",
+    "ms": "Uji proses pemprosesan %_% %_% preemption",
+    "id": "Tes %_% proses pemrosesan %_% preemption"
+  },
+  "啊 %_% 哦 %_% 啊": {
+    "cn": "啊 %_% 哦 %_% 啊",
+    "en": "Ah%_% oh%_% ah",
+    "vi": "Ah %_ %Oh %_ %Ah",
+    "ko": "아 %_% 오 %_% 아",
+    "ms": "Ah %_% oh %_% ah",
+    "id": "Ah%_% oh%_% ah"
+  },
+  "你好%_%水电费%_%啊": {
+    "cn": "你好  %_%  水电费  %_%  啊",
+    "en": "Hello %_% utilities %_% ah",
+    "vi": "Xin chào %_% Tiện ích %_% Ah",
+    "ko": "안녕  %_%  전기세 %_% ",
+    "ms": "Hello %_% bil utiliti %_% ah",
+    "id": "Halo %_% tagihan air dan listrik %_% Ah"
+  },
+  "你水电费好%_%水电水电费费%_%啊": {
+    "cn": "你水电费好 %_% 水电水电费费 %_% 啊",
+    "en": "Your utility bill is good %_% , water, electricity, utility bill %_% ",
+    "vi": "Bạn có hóa đơn tiện ích tốt %_% Hóa đơn tiện ích điện nước %_% Ah",
+    "ko": "너 수도세 좋다 %_% 수도세 수도세 요금 %_% 아냐",
+    "ms": "Bil utiliti anda baik %_% Bil utiliti hidro %_% Ah",
+    "id": "Tagihan air dan listrik Anda baik %_% tagihan air dan listrik %_% "
+  }
+}

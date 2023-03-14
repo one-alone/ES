@@ -27,6 +27,72 @@ class Model
         }
     }
 
+    public function setDB($db_config_key = 'default', $is_readonly = false)
+    {
+        if ('default' == $db_config_key) {
+            $db_config = $GLOBALS['mysql']['master'];
+        } else {
+            if (!empty($GLOBALS['mysql'][$db_config_key])) {
+                $db_config = $GLOBALS['mysql'][$db_config_key];
+            } else {
+                Helper::log("Database Err: Db config '$db_config_key' is not exists!", Helper::FATAL_ERROR);
+            }
+        }
+        if ($is_readonly) {
+            return  $this->_slave_db = $this->_db_instance($db_config, $db_config_key);
+        } else {
+            return  $this->_master_db = $this->_db_instance($db_config, $db_config_key);
+        }
+    }
+
+    private function pdo_ping($dbconn){
+        try{
+            $dbconn->getAttribute(PDO::ATTR_SERVER_INFO);
+        } catch (PDOException $e) {
+            if(strpos($e->getMessage(), 'MySQL server has gone away')===false){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function _db_instance($db_config, $db_config_key)
+    {
+        if(!empty($GLOBALS['mysql_instances'][$db_config_key])) {
+            if(!$this->pdo_ping($GLOBALS['mysql_instances'][$db_config_key])){
+                $GLOBALS['mysql_instances'][$db_config_key] = null;
+            }
+        }
+        if (empty($GLOBALS['mysql_instances'][$db_config_key])) {
+            try {
+                $GLOBALS['mysql_instances'][$db_config_key] = new PDO('mysql:dbname=' . $db_config['MYSQL_DB'] . ';host=' . $db_config['MYSQL_HOST'] . ';port=' . $db_config['MYSQL_PORT'],
+                                                                      $db_config['MYSQL_USER'], $db_config['MYSQL_PASS'],
+                                                                      array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['MYSQL_CHARSET'] . '\''));
+            } catch (PDOException $e) {
+                Helper::log('Database Err: ' . $e->getMessage(), Helper::FATAL_ERROR);
+            }
+        }
+        return $GLOBALS['mysql_instances'][$db_config_key];
+    }
+
+    /** 开启事务并处理业务 */
+    public static function transaction( $fn){
+        $db = self::startTrans();
+        try {
+            $res = $fn();
+            $db->commit();
+            return $res;
+        }catch (Throwable $e){
+            $db->rollback();
+            $code = $e->getCode();
+            if($code == 0){
+                $code = 500;
+            }
+            Helper::responseJson($e->getMessage(),$code);
+        }
+    }
+
+
     public function __get($name)
     {
         if (empty($this->_model[$name])) {
@@ -78,7 +144,7 @@ class Model
             $this->_model = array_pop($res);
             return $this->_model;
         } else {
-            return false;
+            return null;
         }
     }
 
@@ -144,7 +210,9 @@ class Model
                 $values[] = $map_key;
                 $map[$map_key] = str_ireplace('</script>','', $v);
             }
-            $stack[] = '(' . implode($values, ', ') . ')';
+
+            $stack[] = '(' . implode( ', ',$values) . ')';
+
         }
         $sql = "INSERT INTO " . $this->table_name . " (" . implode(', ', $keys) . ") VALUES " . implode(', ',
                                                                                                         $stack);
@@ -175,6 +243,7 @@ class Model
 
     public function pager($page, $pageSize = 10, $scope = 10, $total)
     {
+
         $this->page = null;
         if ($total > $pageSize) {
             $total_page = ceil($total / $pageSize);
@@ -257,53 +326,6 @@ class Model
         Helper::log('Database SQL: "' . $sql . '", ErrorInfo: ' . $err[2], Helper::FATAL_ERROR);
     }
 
-    public function setDB($db_config_key = 'default', $is_readonly = false)
-    {
-        if ('default' == $db_config_key) {
-            $db_config = $GLOBALS['mysql']['master'];
-        } else {
-            if (!empty($GLOBALS['mysql'][$db_config_key])) {
-                $db_config = $GLOBALS['mysql'][$db_config_key];
-            } else {
-                Helper::log("Database Err: Db config '$db_config_key' is not exists!", Helper::FATAL_ERROR);
-            }
-        }
-        if ($is_readonly) {
-            return  $this->_slave_db = $this->_db_instance($db_config, $db_config_key);
-        } else {
-            return  $this->_master_db = $this->_db_instance($db_config, $db_config_key);
-        }
-    }
-
-    private function pdo_ping($dbconn){
-        try{
-            $dbconn->getAttribute(PDO::ATTR_SERVER_INFO);
-        } catch (PDOException $e) {
-            if(strpos($e->getMessage(), 'MySQL server has gone away')!==false){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function _db_instance($db_config, $db_config_key)
-    {
-        if(!empty($GLOBALS['mysql_instances'][$db_config_key])) {
-            if(!$this->pdo_ping($GLOBALS['mysql_instances'][$db_config_key])){
-                $GLOBALS['mysql_instances'][$db_config_key] = null;
-            }
-        }
-        if (empty($GLOBALS['mysql_instances'][$db_config_key])) {
-            try {
-                $GLOBALS['mysql_instances'][$db_config_key] = new PDO('mysql:dbname=' . $db_config['MYSQL_DB'] . ';host=' . $db_config['MYSQL_HOST'] . ';port=' . $db_config['MYSQL_PORT'],
-                                                                      $db_config['MYSQL_USER'], $db_config['MYSQL_PASS'],
-                                                                      array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'' . $db_config['MYSQL_CHARSET'] . '\''));
-            } catch (PDOException $e) {
-                Helper::log('Database Err: ' . $e->getMessage(), Helper::FATAL_ERROR);
-            }
-        }
-        return $GLOBALS['mysql_instances'][$db_config_key];
-    }
 
     private function _wherein($sql, $inArray=array())
     {
@@ -334,10 +356,25 @@ class Model
             $join = array();
             if (array_values($conditions) === $conditions) {
                 list($sql, $conditions) = $this->_wherein($conditions[0], $conditions[1]);
+                // $innerJoin = $conditions[2] ?? [];
             } else {
                 foreach ($conditions as $key => $condition) {
                     $optStr = substr($key, strlen($key) - 1, 1);
-                    if ($optStr == '>' || $optStr == '<') {
+                    if ($optStr == '>' ) {
+                        $optStr2 = substr($key, strlen($key) - 2, 2);
+                        if($optStr2 == '<>'){
+                            $optStr = $optStr2;
+                        }
+                        unset($conditions[$key]);
+                        $key = str_replace($optStr, '', $key);
+                    }else if ($optStr == '=' ) {
+                        $optStr2 = substr($key, strlen($key) - 2, 2);
+                        if($optStr2 == '>=' || $optStr2 == '<='){
+                            $optStr = $optStr2;
+                        }
+                        unset($conditions[$key]);
+                        $key = str_replace($optStr, '', $key);
+                    } else if ($optStr == '<') {
                         unset($conditions[$key]);
                         $key = str_replace($optStr, '', $key);
                     } else {
@@ -353,8 +390,11 @@ class Model
                     $sql = join(" AND ", $join);
                 }
             }
-
             $result["_where"] = " WHERE " . $sql;
+//            if(isset($innerJoin) && $innerJoin){
+//                $result["_where"] = " AS a INNER JOIN {$GLOBALS['prefix']}{$innerJoin[0]} AS b ON ".
+//                    "a.{$innerJoin[1]} = b.{$innerJoin[2]}".$result["_where"];
+//            }
             $result["_bindParams"] = $conditions;
         } else {
             $result["_where"] = " WHERE " . $conditions;

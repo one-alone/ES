@@ -13,13 +13,15 @@ if(!empty($GLOBALS['startSession'])){
 require_once(APP_PATH . "helper.php");
 require_once(APP_PATH . "controller.php");
 require_once(APP_PATH . "model.php");
+require_once(APP_PATH . "orm.php");
+//new Orm();
 require_once(APP_PATH . "view.php");
 
 set_error_handler( ["Helper", "customError"]);
 register_shutdown_function(function (){
     $fatalMsg = error_get_last();
     if($fatalMsg){
-        Helper::log(json_encode($fatalMsg),  Helper::FATAL_ERROR);
+        Helper::log($fatalMsg,  Helper::FATAL_ERROR);
     }
 });
 
@@ -30,7 +32,7 @@ Helper::setRoute();
 $__module = $_REQUEST['m'];
 $__controller = $_REQUEST['c'];
 $__action = $_REQUEST['a'];
-
+$__param = $_REQUEST['_p'];
 spl_autoload_register(function ($class) use ($__module) {
     foreach (array_merge($GLOBALS['plugins'], ['model', 'controller' . DS . $__module, './']) as $dir) {
         $file = APP_PATH . '../' . $dir . DS . $class . '.php';
